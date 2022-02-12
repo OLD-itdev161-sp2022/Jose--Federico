@@ -23,7 +23,7 @@ app.get('/',(req, res)=>
  * @route GET /
  * @desc Test endpoint
  */
-app.post('api/users', (req, res)=> {
+app.post('/api/users', (req, res)=> {
     console.log(req.body);
     res.send(req.body);
 });
