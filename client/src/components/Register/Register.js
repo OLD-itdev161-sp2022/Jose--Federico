@@ -5,10 +5,10 @@ import { useHistory } from 'react-router-dom';
 const Register = ({ authenticateUser }) => {
     let history = useHistory();
     const [userData, setUserData] = useState({
-       name: '',
-       email: '',
-       password: '',
-       passwordConfirm: ''
+        name: '',
+        email: '',
+        password: '',
+        passwordConfirm: ''
     });
 
     const [errorData, setErrorData] = useState({ errors: null });
@@ -17,7 +17,7 @@ const Register = ({ authenticateUser }) => {
     const { errors } = errorData;
 
     const onChange = e => {
-        const {name, value} = e.target;
+        const { name, value } = e.target;
         setUserData({
             ...userData,
             [name]: value
@@ -27,7 +27,7 @@ const Register = ({ authenticateUser }) => {
     const registerUser = async () => {
         if (password !== passwordConfirm) {
             console.log('Passwords do not match');
-        }                                         
+        }
         else {
             const newUser = {
                 name: name,
@@ -44,7 +44,7 @@ const Register = ({ authenticateUser }) => {
 
                 const body = JSON.stringify(newUser);
                 const res = await axios.post('http://localhost:5000/api/users', body, config);
-                
+
                 // Store user data and redirect
                 localStorage.setItem('token', res.data.token);
                 history.push('/');
@@ -67,41 +67,41 @@ const Register = ({ authenticateUser }) => {
             <h2>Register</h2>
             <div>
                 <input
-                type="text"
-                placeholder="Name"
-                name="name"
-                value={name}
-                onChange={e => onChange(e)} />
+                    type="text"
+                    placeholder="Name"
+                    name="name"
+                    value={name}
+                    onChange={e => onChange(e)} />
             </div>
             <div>
                 <input
-                type="text"
-                placeholder="Email"
-                name="email"
-                value={email}
-                onChange={e => onChange(e)} />
+                    type="text"
+                    placeholder="Email"
+                    name="email"
+                    value={email}
+                    onChange={e => onChange(e)} />
             </div>
             <div>
                 <input
-                type="text"
-                placeholder="Password"
-                name="password"
-                value={password}
-                onChange={e => onChange(e)} />
+                    type="text"
+                    placeholder="Password"
+                    name="password"
+                    value={password}
+                    onChange={e => onChange(e)} />
             </div>
             <div>
                 <input
-                type="text"
-                placeholder="Confirm Password"
-                name="passwordConfirm"
-                value={passwordConfirm}
-                onChange={e => onChange(e)} />
+                    type="text"
+                    placeholder="Confirm Password"
+                    name="passwordConfirm"
+                    value={passwordConfirm}
+                    onChange={e => onChange(e)} />
             </div>
             <div>
                 <button onClick={() => registerUser()}>Register</button>
             </div>
             <div>
-                {errors && errors.map(error => 
+                {errors && errors.map(error =>
                     <div key={error.msg}>{error.msg}</div>)}
             </div>
         </div>
