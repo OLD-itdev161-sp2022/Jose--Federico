@@ -82,6 +82,7 @@ const Login = ({ authenticateUser }) => {
             </div>
         </div>
     )
+    
 }
 
 export default Login;
