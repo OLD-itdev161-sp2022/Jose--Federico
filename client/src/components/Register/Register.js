@@ -11,6 +11,7 @@ const Register = ({ authenticateUser }) => {
         passwordConfirm: ''
     });
 
+    
     const [errorData, setErrorData] = useState({ errors: null });
 
     const { name, email, password, passwordConfirm } = userData;
