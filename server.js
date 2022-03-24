@@ -78,26 +78,10 @@ app.post(
                 await user.save();
                 
                 //Generate adn return JWT
-                const payload = {
-                    user: {
-                        id: user.id
-                    }
-                };
-
-                jwt.sign(
-                    payload,
-                    config.get('jwtSecret'),
-                    { expiresIn: '10hr'},
-                    (err, token) => {
-                        if(err) throw err;
-                        res.json({token: token});
-                    }
-                );
-
+                returnToken(user, res)
             } catch (error) {
                 res.status(500).send('Server error');
             }
-        
         }
     }
 );
@@ -110,6 +94,61 @@ app.get('/api/auth', auth, async (req, res) => {
         res.status(500).send('Unknown server error');
     }
 });
+
+app.post(
+    '/api/login',
+    [
+        check('email', 'Please enter a valid email').isEmail(),
+        check('password', 'A password is required').exists()
+    ],
+    async(req, res) =>{
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() });
+        } else {
+            const {email, password} = req.body;
+            try {
+                //Check if user exist
+                let user = await User.findOne({email: email});
+                if (!user) {
+                    return res 
+                        .status(400)
+                        .json({ errors: [{ msg: 'Invalid emial or password'}] });
+                }
+
+                //check password
+                const match = await bcrypt.compare(password, user.password);
+                if (!match) {
+                    return res
+                        .status(400)
+                        .json({ errors: [{ msg: 'Invalid emial or password'}] });
+                }
+
+                returnToken(user, res);
+            }   catch (error) {
+                res.status(500).send('Server Error');
+            }
+        }
+    }
+);
+
+const returnToken = (user, res) => {
+    const payload = {
+        user: {
+            id: user.id
+        }
+    };
+
+    jwt.sign(
+        payload,
+        config.get('jwtSecret'),
+        { expiresIn: '10hr'},
+        (err, token) => {
+            if (err) throw err;
+            res.json({ token: token});
+        }
+    );
+};
 
 //Connection listener
 const port = 5000;
