@@ -65,7 +65,7 @@ class App extends React.Component {
       authenticateUser: this.authenticateUser
     }
 
-    
+    //Does not work
     return (
       <Router>
         <div className='App'>
