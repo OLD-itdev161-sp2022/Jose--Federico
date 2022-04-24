@@ -1,5 +1,4 @@
 import './styles.css';
-
 import React from 'react';
 import slugify from 'slugify';
 import { useHistory } from 'react-router-dom';
