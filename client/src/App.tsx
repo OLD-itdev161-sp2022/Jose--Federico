@@ -1,16 +1,18 @@
-import React from 'react';
-import axios from 'axios';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import './App.css';
-import Register from './components/Register/Register';
-import Login from './components/Login/Login';
-import PostList from './components/PostList/PostList';
-import Post from './components/Post/Post';
-import EditPost from './components/Post/EditPost';
+
+import { Link, Route, BrowserRouter as Router, Switch } from 'react-router-dom';
+
 import CreatePost from './components/Post/CreatePost';
+import EditPost from './components/Post/EditPost';
+import Login from './components/Login/Login';
+import Post from './components/Post/Post';
+import PostList from './components/PostList/PostList';
+import React from 'react';
+import Register from './components/Register/Register';
+import axios from 'axios';
 
 class App extends React.Component {
-
+    
     state = {
         posts: [],
         post: null,
@@ -18,26 +20,30 @@ class App extends React.Component {
         user: null
     }
 
+    componentDidMount() {
+        this.authenticateUser();
+    }
+
     authenticateUser = () => {
         const token = localStorage.getItem('token');
 
-        if (!token) {
+        if(!token) {
             localStorage.removeItem('user');
             this.setState({ user: null });
         }
 
-        if (token) {
+        if(token) {
             const config = {
                 headers: {
-                    'x-auth-token': token
+                    'x-auth-token' : token
                 }
             }
             axios.get('http://localhost:5000/api/auth', config)
                 .then((response) => {
                     localStorage.setItem('user', response.data.name);
                     this.setState(
-                        {
-                            user: response.data.name,
+                        { 
+                            user: response.data.name, 
                             token: token
                         },
                         () => {
@@ -56,14 +62,14 @@ class App extends React.Component {
     loadData = () => {
         const { token } = this.state;
 
-        if (token) {
+        if(token){
             const config = {
                 headers: {
                     'x-auth-token': token
                 }
             };
             axios
-                .get('http://localhost:5000/api/posts', config)
+                .get('/api/posts/', config)
                 .then(response => {
                     this.setState({
                         posts: response.data
@@ -84,14 +90,14 @@ class App extends React.Component {
     deletePost = post => {
         const { token } = this.state;
 
-        if (token) {
+        if(token) {
             const config = {
                 headers: {
-                    'x-auth-token': token
+                    'x-auth-token' : token
                 }
             };
 
-            axios
+            axios 
                 .delete(`http://localhost:5000/api/posts/${post._id}`, config)
                 .then(response => {
                     const newPosts = this.state.posts.filter(p => p._id !== post._id);
@@ -125,23 +131,9 @@ class App extends React.Component {
 
         newPosts[index] = post;
 
-        this.setState({
+        this.setState({ 
             posts: newPosts
         });
-    }
-
-    componentDidMount() {
-        axios.get('http://localhost:5000')
-            .then((response) => {
-                this.setState({
-                    data: response.data
-                })
-            })
-            .catch((error) => {
-                console.error(`Error fetching data: ${error}`);
-            })
-
-        this.authenticateUser();
     }
 
     viewPost = post => {
@@ -153,9 +145,9 @@ class App extends React.Component {
         let { user, posts, post, token } = this.state;
         const authProps = {
             authenticateUser: this.authenticateUser
-        };
+        }
 
-        return (
+        return(
             <Router>
                 <div className="App">
                     <header className="App-header">
@@ -164,32 +156,35 @@ class App extends React.Component {
                             <li><Link to="/">Home</Link></li>
                             <li><Link to="/register">Register</Link></li>
                             <li>
-                                {user ?
-                                    <Link to="" onClick={this.logOut}>Login</Link> :
-                                    <Link to="/login">Log in</Link>
-                                }
+                                {user ? (
+                                    <Link to="/new-post">New Post</Link>
+                                ) : (
+                                    <Link to="/register">Register</Link>
+                                )}
                             </li>
+                            <li>
+                                { user ? (
+                                    <Link to="" onClick={this.logOut}>Logout</Link>
+                                ) : (
+                                    <Link to="/login">Log in</Link>
+                                )}    
+                            </li>                
                         </ul>
-                    </header>
-
-
-
-
+                    </header>   
                     <main>
                         <Switch>
                             <Route exact path="/">
                                 {user ? (
-                                    <React.Fragment>
-                                        <div>Hello {user}!</div>
-                                        <PostList
-                                            posts={posts}
-                                            clickPost={this.viewPost}
-                                            deletePost={this.deletePost}
-                                            editPost={this.editPost}
-                                        />
-                                    </React.Fragment>
+                                <React.Fragment>
+                                    <div>Hello {user}!</div>
+                                    <PostList 
+                                        posts={posts} 
+                                        clickPost={this.viewPost}
+                                        deletePost={this.deletePost} 
+                                        editPost={this.editPost} />
+                                </React.Fragment>
                                 ) : (
-                                    <React.Fragment>Please Register or Login</React.Fragment>
+                                <React.Fragment>Please Register or Login</React.Fragment>    
                                 )}
                             </Route>
                             <Route path="/posts/:postId">
@@ -199,26 +194,21 @@ class App extends React.Component {
                                 <CreatePost token={token} onPostCreated={this.onPostCreated} />
                             </Route>
                             <Route path="/edit-post/:postId">
-                                <EditPost
+                                <EditPost 
                                     token={token}
                                     post={post}
-                                    onPostUpdated={this.onPostUpdated}
-                                />
+                                    onPostUpdated={this.onPostUpdated}/>
                             </Route>
-                            <Route
-                                exact
-                                path="/register"
-                                render={() => <Register {...authProps} />}
-                            />
-                            <Route
-                                exact
-                                path="/login"
-                                render={() => <Login {...authProps} />}
-                            />
+                            <Route 
+                                exact path="/register" 
+                                render={() => <Register {...authProps} />} />
+                            <Route 
+                                exact path="/login" 
+                                render={() => <Login {...authProps} />} />
                         </Switch>
                     </main>
                 </div>
-            </Router>
+            </Router> 
         );
     }
 }
